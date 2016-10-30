@@ -1,16 +1,31 @@
 #!/bin/bash
-# check if iptables-persistant is installed
 clear
 echo "~~~~~~~~~~ Welcome to 'Fortifyrewall' ~~~~~~~~~~~~~~~~~~"
-echo "                    v16.10-31.0022"
+echo "                 v16.10-31.0022"
 echo ""
-echo "this script will apply the most basic settings"
-echo "that will defeat any attempts for port scanning,"
-echo "and also block any incomming connections on any port"
-echo "except to the ports that you defined before using this script"
+echo "After applying most of the well kown security best practicies,"
+echo "this script will apply the most basic settings that will"
+echo "discourage any attempts for port scanning and it will also"
+echo "block any incomming connections on any port except to"
+echo "those defined by the user, before using this script"
 echo ""
+echo ""
+echo "press Ctrl+X to stop befor initiallisation"
 echo ""
 echo "~~~~~~~~~~~~ Initiallising ~~~~~~~~~~~~~~~~~~~~~~~"
+echo "             in 5 secconds"
+sleep 1
+echo "5....."
+sleep 1
+echo "4...."
+sleep 1
+echo "3..."
+sleep 1
+echo "2.."
+sleep 1
+echo "1."
+sleep 1
+echo "Starting Fortifyrewall..."
 sleep 1
 echo "Checking if iptables-persistent is installed"
 sleep 1
@@ -103,7 +118,7 @@ iptables -A INPUT -p tcp -i eth0 --dport 137:139 -j REJECT
 iptables -A INPUT -p udp -i eth0 --dport 137:139 -j REJECT
 sleep 2
 echo ""
-echo "Creating a IP whitelist from which all connections will be accepted..."
+echo "Creating a IP whitelist from which, all connections will be accepted..."
 iptables -I INPUT -m recent --name whitelist --rcheck -j ACCEPT
 echo ""
 echo "Set default policies to DROP..."
@@ -152,14 +167,15 @@ echo "Allow incoming connections to user defined ports..."
 # e.g :
 #iptables -A INPUT -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT #uncomment if you use webserver
 #iptables -A INPUT -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT #uncomment if you use SSL on your webserver
-iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+#iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT # accept SSH
+
+# OR for ssh, if you do not use ssh key based authentication uncomment and adjust to your needs:
+
+#iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
+#iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 4 --rttl --name SSH -j LOG --log-prefix "Fortifyrewall_Blocked_SSH_brute_force "
+#iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 4 --rttl --name SSH -j DROP
 
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE ends above ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
-#echo "Start Loggin and Droping everything else..."
-#iptables -N LOGGING
-#iptables -A LOGGING -j LOG
-#iptables -A LOGGING -j DROP
-#iptables -A INPUT -j LOGGING
 sleep 2
 echo ""
 echo "Creating a chain port scan and add logging to it with the 'Fortifyrewall_Blocked_scans' prefix..."
@@ -183,10 +199,6 @@ iptables -A domainscan -j DROP
 sleep 2
 echo ""
 echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
-##############
-# Protecting portscans
-# Attacking IP will be locked for 24 hours (3600 x 24 = 86400 Seconds). Their IP’s are stored in a list called ‘portscan’
-# flooding of RST packets, smurf attack Rejection
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j portscan
 iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j portscan
@@ -201,14 +213,18 @@ iptables -A FORWARD -m recent --name UDP_FLOOD --remove
 
 #Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
 iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
-iptables -A INPUT -p udp -m state --state NEW -m recent --set --name Domainscans
-iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name Domainscans -j UDP
+iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
+iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
 sleep 2
 echo ""
 echo "Last but not least, save these awesome new rules..." 
 sleep 2
 dpkg-reconfigure iptables-persistent
 echo ""
-echo "~~~~~~~~~~ 'Fortifyrewall has completed applying its settings' ~~~~~~~~~~"
+echo "~~~~~~~~~~ 'Fortifyrewall has completed applying its settings' ~~~~~~~~~~~"
 echo ""
+echo "		I hope it saved you valuable time with its usefullness"
+echo ""
+echo "For any Feedback you have, visit: https://github.com/Utappia/fortifyrewall "
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 sleep 2
