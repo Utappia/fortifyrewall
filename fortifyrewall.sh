@@ -1,4 +1,9 @@
 #!/bin/bash
+# Name: Fortifyrewall
+# Devel: Salih Emin
+# Contact: https://github.com/Utappia/fortifyrewall
+# License: GPL3
+
 clear
 echo "~~~~~~~~~~ Welcome to 'Fortifyrewall' ~~~~~~~~~~~~~~~~~~"
 echo "                 v16.10-31.0022"
