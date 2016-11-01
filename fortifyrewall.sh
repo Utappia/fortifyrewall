@@ -185,6 +185,9 @@ echo "Allow incoming connections to user defined ports..."
 #iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 4 --rttl --name SSH -j LOG --log-prefix "Fortifyrewall_Blocked_SSH_brute_force "
 #iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 4 --rttl --name SSH -j DROP
 
+# Add DoS attack prevention to port 80
+#iptables -A INPUT -p tcp --dport 80 -m limit --limit 25/minute --limit-burst 100 -j ACCEPT
+
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE ends above ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 sleep 2
 echo ""
