@@ -95,6 +95,7 @@ sleep 2
 echo ""
 echo "Allow Traffic on loopback interface..."
 iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
 sleep 2
 echo ""
 echo "Allow previously initiated connections to bypass rules..."
@@ -138,7 +139,7 @@ iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 sleep 2
 echo ""
-echo "Allow ping from inside the server to outside"
+echo "Allow ping from inside the server to outside world..."
 iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 sleep 2
