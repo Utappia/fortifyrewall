@@ -204,7 +204,6 @@ iptables -A domainscan -j DROP
 sleep 2
 echo ""
 echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
-iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j portscan
 iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j portscan
 iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j portscan
