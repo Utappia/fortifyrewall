@@ -135,8 +135,12 @@ echo ""
 echo "Enable SMURF attack protection..."
 iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
 iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
-
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
+sleep 2
+echo ""
+echo "Allow ping from inside the server to outside"
+iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 sleep 2
 echo ""
 echo "Droping all invalid packets..."
