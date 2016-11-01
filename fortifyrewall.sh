@@ -143,6 +143,7 @@ echo "Droping all invalid packets..."
 iptables -A INPUT -m state --state INVALID -j DROP
 iptables -A FORWARD -m state --state INVALID -j DROP
 iptables -A OUTPUT -m state --state INVALID -j DROP
+#
 sleep 2
 echo ""
 echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
