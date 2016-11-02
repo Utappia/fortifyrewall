@@ -204,11 +204,11 @@ iptables -A UDP -p udp -m state --state NEW -m recent --set --name UDP_FLOOD
 iptables -A UDP -j DROP
 sleep 2
 echo ""
-echo "Creating a chain Domainscans with the 'Fortifyrewall_Blocked_domain_scans' prefix... "
-iptables -N domainscan
-iptables -A domainscan -j LOG --log-level 4 --log-prefix 'Fortifyrewall_Blocked_domain_scans '
-iptables -A domainscan -p tcp -m state --state NEW -m recent --set --name Webscanners
-iptables -A domainscan -j DROP
+#echo "Creating a chain Domainscans with the 'Fortifyrewall_Blocked_domain_scans' prefix... "
+#iptables -N domainscan
+#iptables -A domainscan -j LOG --log-level 4 --log-prefix 'Fortifyrewall_Blocked_domain_scans '
+#iptables -A domainscan -p tcp -m state --state NEW -m recent --set --name Webscanners
+#iptables -A domainscan -j DROP
 sleep 2
 echo ""
 echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
@@ -225,8 +225,8 @@ iptables -A FORWARD -m recent --name UDP_FLOOD --remove
 
 #Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
 iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
-iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
-iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
+#iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
+#iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
 sleep 2
 echo ""
 echo "Last but not least, save these awesome new rules..." 
