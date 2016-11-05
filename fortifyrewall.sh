@@ -52,15 +52,18 @@ fi
 sleep 2
 echo ""
 echo "Deleting all Firewall settings to start clean..."
+# Flush the nat and mangle tables, flush all chains (-F), and delete all non-default chains (-X)
+iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
 # Start clean by setting the default policies for each of the built-in chains to ACCEPT.
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
-# Flush the nat and mangle tables, flush all chains (-F), and delete all non-default chains (-X)
-iptables -t nat -F
-iptables -t mangle -F
-iptables -F
-iptables -X
+
 sleep 2
 echo ""
 echo "Dropping Source Routed Packets..."
@@ -95,6 +98,7 @@ sleep 2
 echo ""
 echo "Allow Traffic on loopback interface..."
 iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
 sleep 2
 echo ""
 echo "Allow previously initiated connections to bypass rules..."
@@ -135,8 +139,12 @@ echo ""
 echo "Enable SMURF attack protection..."
 iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
 iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
-
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
+sleep 2
+echo ""
+echo "Allow ping from inside the server to outside world..."
+iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 sleep 2
 echo ""
 echo "Droping all invalid packets..."
@@ -180,6 +188,9 @@ echo "Allow incoming connections to user defined ports..."
 #iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 4 --rttl --name SSH -j LOG --log-prefix "Fortifyrewall_Blocked_SSH_brute_force "
 #iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 4 --rttl --name SSH -j DROP
 
+# Add DoS attack prevention to port 80
+#iptables -A INPUT -p tcp --dport 80 -m limit --limit 25/minute --limit-burst 100 -j ACCEPT
+
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE ends above ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 sleep 2
 echo ""
@@ -196,11 +207,11 @@ iptables -A UDP -p udp -m state --state NEW -m recent --set --name UDP_FLOOD
 iptables -A UDP -j DROP
 sleep 2
 echo ""
-echo "Creating a chain Domainscans with the 'Fortifyrewall_Blocked_domain_scans' prefix... "
-iptables -N domainscan
-iptables -A domainscan -j LOG --log-level 4 --log-prefix 'Fortifyrewall_Blocked_domain_scans '
-iptables -A domainscan -p tcp -m state --state NEW -m recent --set --name Webscanners
-iptables -A domainscan -j DROP
+#echo "Creating a chain Domainscans with the 'Fortifyrewall_Blocked_domain_scans' prefix... "
+#iptables -N domainscan
+#iptables -A domainscan -j LOG --log-level 4 --log-prefix 'Fortifyrewall_Blocked_domain_scans '
+#iptables -A domainscan -p tcp -m state --state NEW -m recent --set --name Webscanners
+#iptables -A domainscan -j DROP
 sleep 2
 echo ""
 echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
@@ -217,8 +228,8 @@ iptables -A FORWARD -m recent --name UDP_FLOOD --remove
 
 #Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
 iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
-iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
-iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
+#iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
+#iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
 sleep 2
 echo ""
 echo "Last but not least, save these awesome new rules..." 
