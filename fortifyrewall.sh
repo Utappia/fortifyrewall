@@ -163,6 +163,13 @@ iptables -A FORWARD -m state --state INVALID -j DROP
 iptables -A OUTPUT -m state --state INVALID -j DROP
 sleep 2
 echo ""
+echo "Logging nmap scans with the 'Fortifyrewall Nmap Scan Blocked' prefix"
+iptables -N NMAPSCAN
+iptables -A INPUT -j NMAPSCAN
+iptables -A NMAPSCAN -m limit --limit 2/min -j LOG --log-prefix "Fortifyrewall Nmap Scan Blocked: " --log-level 4
+iptables -A NMAPSCAN -j DROP
+sleep 2
+echo ""
 echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j NMAPSCAN
@@ -215,13 +222,6 @@ iptables -N UDP
 iptables -A UDP -j LOG --log-level 4 --log-prefix 'Fortifyrewall_UDP_FLOOD '
 iptables -A UDP -p udp -m state --state NEW -m recent --set --name UDP_FLOOD
 iptables -A UDP -j DROP
-sleep 2
-echo ""
-echo "Logging nmap scans with the 'Fortifyrewall Nmap Scan Blocked' prefix"
-iptables -N NMAPSCAN
-iptables -A INPUT -j NMAPSCAN
-iptables -A NMAPSCAN -m limit --limit 2/min -j LOG --log-prefix "Fortifyrewall Nmap Scan Blocked: " --log-level 4
-iptables -A NMAPSCAN -j DROP
 
 #echo "Creating a chain Domainscans with the 'Fortifyrewall_Blocked_domain_scans' prefix... "
 #iptables -N domainscan
