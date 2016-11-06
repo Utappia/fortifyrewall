@@ -176,17 +176,6 @@ iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 sleep 2
 echo ""
-echo "Allow ping from inside the server to outside world..."
-iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
-iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
-sleep 2
-echo ""
-echo "Droping all invalid packets..."
-iptables -A INPUT -m state --state INVALID -j DROP
-iptables -A FORWARD -m state --state INVALID -j DROP
-iptables -A OUTPUT -m state --state INVALID -j DROP
-sleep 2
-echo ""
 echo "In case of Nmap scan, defeat port scanning in non standard configurations (XMAS , Banner Scan, etc)..."
 iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG --log-prefix "Nmap scan blocked : "
 iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j DROP
@@ -207,6 +196,17 @@ echo ""
 echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j DROP
+sleep 2
+echo ""
+echo "Allow ping from inside the server to outside world..."
+iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+sleep 2
+echo ""
+echo "Droping all invalid packets..."
+iptables -A INPUT -m state --state INVALID -j DROP
+iptables -A FORWARD -m state --state INVALID -j DROP
+iptables -A OUTPUT -m state --state INVALID -j DROP
 sleep 2
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE starts bleow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 # Here you should specify which ports should be open for incomming connections (e.g SSH, FTP, Apache etc)
