@@ -4,6 +4,16 @@
 # Contact: https://github.com/Utappia/fortifyrewall
 # License: GPL3
 
+# Make sure only an admin user (sudo) can run this script
+if [[ $EUID -ne 0 ]]; then
+   echo "Checking permissions..."
+   sleep 1
+   echo "Are you 'sudo' user ? This script must be run with sudo... Exiting..." 1>&2
+   sleep 2
+   exit 1
+fi
+
+
 clear
 echo "~~~~~~~~~~ Welcome to 'Fortifyrewall' ~~~~~~~~~~~~~~~~~~"
 echo "                 v16.11-06.1459"
