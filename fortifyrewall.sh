@@ -245,7 +245,7 @@ iptables -A INPUT -m recent --name UDP_FLOOD --remove
 iptables -A FORWARD -m recent --name UDP_FLOOD --remove
 
 #Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
-iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
+#iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
 #iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
 #iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
 sleep 2
