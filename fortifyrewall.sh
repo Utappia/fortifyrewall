@@ -138,7 +138,9 @@ iptables -A INPUT -d 255.255.255.255 -j DROP
 sleep 2
 echo ""
 echo "Disable smb/windows sharing packets because they generate too much logging..."
+iptables -A INPUT -p tcp --dport 137:139 -j LOG --log-prefix "SMB/Windows service Scan : "
 iptables -A INPUT -p tcp --dport 137:139 -j REJECT
+iptables -A INPUT -p udp --dport 137:139 -j LOG --log-prefix "SMB/Windows service Scan : "
 iptables -A INPUT -p udp --dport 137:139 -j REJECT
 sleep 2
 echo ""
