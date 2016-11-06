@@ -153,6 +153,7 @@ iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j LOG --log-
 iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
 iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j LOG --log-prefix "SMURF timestamp-request : "
 iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
+# flooding of RST packets, smurf attack Rejection
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 sleep 2
 echo ""
