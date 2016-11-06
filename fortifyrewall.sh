@@ -117,7 +117,7 @@ iptables -A OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
 sleep 2
 echo ""
 echo "Protect against spoofing packets..."
-iptables -A INPUT -s 10.0.0.0/8 -j DROP 
+iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
 iptables -A INPUT -s 127.0.0.0/8 -j DROP
@@ -146,16 +146,11 @@ iptables --policy OUTPUT DROP
 iptables --policy FORWARD DROP
 sleep 2
 echo ""
-echo "Logging SMURF attacks with 'Fortifyrewall SMURF Blocked' prefix..."
-iptables -N SMURFSCAN
-iptables -A INPUT -j SMURFSCAN
-iptables -A SMURFSCAN -m limit --limit 2/min -j LOG --log-prefix "Fortifyrewall SMURF Blocked' prefix: " --log-level 4
-iptables -A SMURFSCAN -j DROP
-sleep 2
-echo ""
 echo "Enable SMURF attack protection..."
-iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j SMURFSCAN
-iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j SMURFSCAN
+iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j LOG --log-prefix "SMURF address-mask-request : "
+iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
+iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j LOG --log-prefix "SMURF timestamp-request : "
+iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 sleep 2
 echo ""
