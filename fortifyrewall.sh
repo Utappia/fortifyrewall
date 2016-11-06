@@ -146,9 +146,16 @@ iptables --policy OUTPUT DROP
 iptables --policy FORWARD DROP
 sleep 2
 echo ""
+echo "Logging SMURF attacks with 'Fortifyrewall SMURF Blocked' prefix..."
+iptables -N SMURFSCAN
+iptables -A INPUT -j SMURFSCAN
+iptables -A SMURFSCAN -m limit --limit 2/min -j LOG --log-prefix "Fortifyrewall SMURF Blocked' prefix: " --log-level 4
+iptables -A SMURFSCAN -j DROP
+sleep 2
+echo ""
 echo "Enable SMURF attack protection..."
-iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP
-iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP
+iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j SMURFSCAN
+iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j SMURFSCAN
 iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
 sleep 2
 echo ""
