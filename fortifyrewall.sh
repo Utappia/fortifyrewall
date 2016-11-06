@@ -142,10 +142,10 @@ iptables -A INPUT -p tcp --dport 137:139 -j LOG --log-prefix "SMB/Windows servic
 iptables -A INPUT -p tcp --dport 137:139 -j DROP
 iptables -A INPUT -p udp --dport 137:139 -j LOG --log-prefix "SMB/Windows service Scan : "
 iptables -A INPUT -p udp --dport 137:139 -j DROP
-sleep 2
-echo ""
-echo "Creating a IP whitelist from which, all connections will be accepted..."
-iptables -I INPUT -m recent --name whitelist --rcheck -j ACCEPT
+#sleep 2
+#echo ""
+#echo "Creating a IP whitelist from which, all connections will be accepted..."
+#iptables -I INPUT -m recent --name whitelist --rcheck -j ACCEPT
 sleep 2
 echo ""
 echo "Enable SMURF attack protection..."
