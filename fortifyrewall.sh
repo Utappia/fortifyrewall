@@ -165,26 +165,26 @@ iptables -A FORWARD -m state --state INVALID -j DROP
 iptables -A OUTPUT -m state --state INVALID -j DROP
 sleep 2
 echo ""
-echo "Logging nmap scans with the 'Fortifyrewall Nmap Scan Blocked' prefix"
-iptables -N NMAPSCAN
-iptables -A INPUT -j NMAPSCAN
-iptables -A NMAPSCAN -m limit --limit 2/min -j LOG --log-prefix "Fortifyrewall Nmap Scan Blocked: " --log-level 4
-iptables -A NMAPSCAN -j DROP
-sleep 2
-echo ""
 echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
-iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j NMAPSCAN
+iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j DROP
 sleep 2
 echo ""
 echo "In case of Nmap scan, defeat port scanning in non standard configurations (XMAS , Banner Scan, etc)..."
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j NMAPSCAN
-iptables -A INPUT -p tcp --tcp-flags ALL ALL -j NMAPSCAN
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j NMAPSCAN
-iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j NMAPSCAN
-iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j NMAPSCAN
-iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j NMAPSCAN
-iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j NMAPSCAN
+iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
 sleep 2
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE starts bleow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 # Here you should specify which ports should be open for incomming connections (e.g SSH, FTP, Apache etc)
