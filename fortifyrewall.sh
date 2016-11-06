@@ -42,6 +42,11 @@ echo "1."
 sleep 1
 echo "Starting Fortifyrewall..."
 sleep 1
+
+# Function to check if iptables-persistent is installed
+
+IspersistentInstalled(){
+
 echo "Checking if iptables-persistent is installed"
 sleep 1
 echo ""
@@ -60,6 +65,11 @@ else
     echo ""
 fi
 sleep 2
+}
+
+# Execute IspersistentInstalled or add # to disable it
+IspersistentInstalled
+
 echo ""
 echo "Deleting all Firewall settings to start clean..."
 # Flush the nat and mangle tables, flush all chains (-F), and delete all non-default chains (-X)
