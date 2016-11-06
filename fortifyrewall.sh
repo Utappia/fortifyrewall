@@ -47,24 +47,24 @@ sleep 1
 
 IspersistentInstalled(){
 
-echo "Checking if iptables-persistent is installed"
-sleep 1
-echo ""
-echo ""
-if apt-get -qq install iptables-persistent; then
-    echo ""
-    echo "OK iptables-persistent is installed ! Procceding..."
-    sleep 2
-    echo ""
-else
-    echo ""
-    echo "Sorry but I need to install iptables-persistent..."
-    sleep 2
-    apt update
-    apt -y install iptables-persistent
-    echo ""
-fi
-sleep 2
+	echo "Checking if iptables-persistent is installed"
+	sleep 1
+	echo ""
+	echo ""
+	if apt-get -qq install iptables-persistent; then
+	    echo ""
+	    echo "OK iptables-persistent is installed ! Procceding..."
+	    sleep 2
+	    echo ""
+	else
+	    echo ""
+	    echo "Sorry but I need to install iptables-persistent..."
+	    sleep 2
+	    apt update
+	    apt -y install iptables-persistent
+	    echo ""
+	fi
+	sleep 2
 }
 
 # Execute IspersistentInstalled or add # to disable it
@@ -88,36 +88,36 @@ iptables -P OUTPUT ACCEPT
 
 KernelFortify(){
 
-sleep 2
-echo ""
-echo "Dropping Source Routed Packets..."
-echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route
-sysctl net.ipv4.conf.all.accept_source_route=0
-sleep 2
-echo ""
-echo "Enable SYN flooding protection (TCP SYN Cookies)..."
-echo 1 > /proc/sys/net/ipv4/tcp_syncookies
-sysctl net.ipv4.tcp_syncookies=1
-sleep 2
-echo ""
-echo "Drop ICMP redirect messages..."
-echo 0 > /proc/sys/net/ipv4/conf/all/accept_redirects
-sysctl net.ipv4.conf.all.accept_redirects=0
-sleep 2
-echo ""
-echo "Dont Send ICMP redirect messages..."
-echo 0 > /proc/sys/net/ipv4/conf/all/send_redirects
-sysctl net.ipv4.conf.all.send_redirects=0
-sleep 2
-echo ""
-echo "Enable source address spoofing protection..."
-echo 1 > /proc/sys/net/ipv4/conf/all/rp_filter
-sysctl net.ipv4.conf.all.rp_filter=1
-sleep 2
-echo ""
-echo "Enable logging of packets with forged source addresses..."
-echo 1 > /proc/sys/net/ipv4/conf/all/log_martians
-sysctl net.ipv4.conf.all.log_martians=1
+	sleep 2
+	echo ""
+	echo "Dropping Source Routed Packets..."
+	echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route
+	sysctl net.ipv4.conf.all.accept_source_route=0
+	sleep 2
+	echo ""
+	echo "Enable SYN flooding protection (TCP SYN Cookies)..."
+	echo 1 > /proc/sys/net/ipv4/tcp_syncookies
+	sysctl net.ipv4.tcp_syncookies=1
+	sleep 2
+	echo ""
+	echo "Drop ICMP redirect messages..."
+	echo 0 > /proc/sys/net/ipv4/conf/all/accept_redirects
+	sysctl net.ipv4.conf.all.accept_redirects=0
+	sleep 2
+	echo ""
+	echo "Dont Send ICMP redirect messages..."
+	echo 0 > /proc/sys/net/ipv4/conf/all/send_redirects
+	sysctl net.ipv4.conf.all.send_redirects=0
+	sleep 2
+	echo ""
+	echo "Enable source address spoofing protection..."
+	echo 1 > /proc/sys/net/ipv4/conf/all/rp_filter
+	sysctl net.ipv4.conf.all.rp_filter=1
+	sleep 2
+	echo ""
+	echo "Enable logging of packets with forged source addresses..."
+	echo 1 > /proc/sys/net/ipv4/conf/all/log_martians
+	sysctl net.ipv4.conf.all.log_martians=1
 }
 
 # Execute KernelFortify function or add # to disable it
