@@ -198,6 +198,28 @@ iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j DROP
 sleep 2
 echo ""
+echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
+iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
+
+# Remove attacking IP after 24 hours
+iptables -A INPUT -m recent --name portscan --remove
+iptables -A FORWARD -m recent --name portscan --remove
+iptables -A INPUT -m recent --name UDP_FLOOD --remove
+iptables -A FORWARD -m recent --name UDP_FLOOD --remove
+
+#Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
+#iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
+#iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
+#iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
+sleep 2
+echo ""
 echo "Allow ping from inside the server to outside world..."
 iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
@@ -233,28 +255,6 @@ echo "Allow incoming connections to user defined ports..."
 #iptables -A INPUT -p tcp --dport 80 -m limit --limit 25/minute --limit-burst 100 -j ACCEPT
 
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE ends above ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
-sleep 2
-echo ""
-echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
-
-# Remove attacking IP after 24 hours
-iptables -A INPUT -m recent --name portscan --remove
-iptables -A FORWARD -m recent --name portscan --remove
-iptables -A INPUT -m recent --name UDP_FLOOD --remove
-iptables -A FORWARD -m recent --name UDP_FLOOD --remove
-
-#Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
-#iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
-#iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
-#iptables -A INPUT -p udp -m state --state NEW -m recent --rcheck --seconds 5 --hitcount 5 --name domainscans -j UDP
 sleep 2
 echo ""
 echo "Last but not least, save these awesome new rules..." 
