@@ -74,6 +74,10 @@ iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 
+#kernel parameters function:
+
+KernelFortify(){
+
 sleep 2
 echo ""
 echo "Dropping Source Routed Packets..."
@@ -104,6 +108,11 @@ echo ""
 echo "Enable logging of packets with forged source addresses..."
 echo 1 > /proc/sys/net/ipv4/conf/all/log_martians
 sysctl net.ipv4.conf.all.log_martians=1
+}
+
+# Execute KernelFortify function or add # to disable it
+KernelFortify
+
 sleep 2
 echo ""
 echo "Allow Traffic on loopback interface..."
