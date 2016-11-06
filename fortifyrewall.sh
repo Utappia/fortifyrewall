@@ -235,30 +235,15 @@ echo "Allow incoming connections to user defined ports..."
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE ends above ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 sleep 2
 echo ""
-echo "Creating a chain port scan and add logging to it with the 'Fortifyrewall_Blocked_scans' prefix..."
-iptables -N portscan
-iptables -A portscan -j LOG --log-level 4 --log-prefix 'Fortifyrewall_Blocked_scans '
-iptables -A portscan -j DROP
-sleep 2
-echo ""
-echo "Creating a chain UDP flood attemt with the 'Fortifyrewall_UDP_FLOOD' prefix... "
-iptables -N UDP
-iptables -A UDP -j LOG --log-level 4 --log-prefix 'Fortifyrewall_UDP_FLOOD '
-iptables -A UDP -p udp -m state --state NEW -m recent --set --name UDP_FLOOD
-iptables -A UDP -j DROP
-
-#echo "Creating a chain Domainscans with the 'Fortifyrewall_Blocked_domain_scans' prefix... "
-#iptables -N domainscan
-#iptables -A domainscan -j LOG --log-level 4 --log-prefix 'Fortifyrewall_Blocked_domain_scans '
-#iptables -A domainscan -p tcp -m state --state NEW -m recent --set --name Webscanners
-#iptables -A domainscan -j DROP
-sleep 2
-echo ""
 echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j portscan
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j portscan
-iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j portscan
-iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j portscan
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
+iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
+iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
 
 # Remove attacking IP after 24 hours
 iptables -A INPUT -m recent --name portscan --remove
