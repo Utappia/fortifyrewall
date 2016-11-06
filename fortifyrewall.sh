@@ -16,7 +16,7 @@ fi
 
 clear
 echo "~~~~~~~~~~ Welcome to 'Fortifyrewall' ~~~~~~~~~~~~~~~~~~"
-echo "                 v16.11-06.1459"
+echo "                 v16.11-06.1529"
 echo ""
 echo "After applying most of the well kown security best practicies,"
 echo "this script will apply the most basic settings that will"
