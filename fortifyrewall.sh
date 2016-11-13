@@ -178,19 +178,19 @@ sleep 2
 echo ""
 echo "In case of Nmap scan, defeat port scanning in non standard configurations (XMAS , Banner Scan, etc)..."
 iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL FIN,URG,PSH -j DROP
 iptables -A INPUT -p tcp --tcp-flags ALL ALL -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL ALL --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL ALL -j DROP
 iptables -A INPUT -p tcp --tcp-flags ALL NONE -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL NONE --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL NONE -j DROP
 iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags SYN,RST SYN,RST -j DROP
 iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags SYN,FIN SYN,FIN -j DROP
 iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags FIN,ACK FIN -j DROP
 iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
 sleep 2
 # Remove attacking IP after 24 hours
 iptables -A INPUT -m recent --name portscan --remove
