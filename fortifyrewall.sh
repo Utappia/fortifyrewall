@@ -121,7 +121,7 @@ KernelFortify(){
 }
 
 # Execute KernelFortify function or add # to disable it
-KernelFortify
+#KernelFortify
 
 sleep 2
 echo ""
