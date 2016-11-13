@@ -68,7 +68,7 @@ IspersistentInstalled(){
 }
 
 # Execute IspersistentInstalled or add # to disable it
-IspersistentInstalled
+#IspersistentInstalled
 
 echo ""
 echo "Deleting all Firewall settings to start clean..."
