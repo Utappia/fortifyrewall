@@ -68,7 +68,7 @@ IspersistentInstalled(){
 }
 
 # Execute IspersistentInstalled or add # to disable it
-#IspersistentInstalled
+IspersistentInstalled
 
 echo ""
 echo "Deleting all Firewall settings to start clean..."
@@ -121,7 +121,7 @@ KernelFortify(){
 }
 
 # Execute KernelFortify function or add # to disable it
-#KernelFortify
+KernelFortify
 echo ""
 echo "Set default policies to DROP..."
 iptables --policy INPUT DROP
