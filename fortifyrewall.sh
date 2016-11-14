@@ -122,7 +122,13 @@ KernelFortify(){
 
 # Execute KernelFortify function or add # to disable it
 KernelFortify
-
+echo ""
+echo "Set default policies to DROP..."
+iptables --policy INPUT DROP
+iptables --policy OUTPUT DROP
+iptables --policy FORWARD DROP
+sleep 2
+echo ""
 sleep 2
 echo ""
 echo "Allow Traffic on loopback interface..."
@@ -133,11 +139,6 @@ echo ""
 echo "Allow previously initiated connections to bypass rules..."
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
-echo ""
-echo "Set default policies to DROP..."
-iptables --policy INPUT DROP
-iptables --policy OUTPUT DROP
-iptables --policy FORWARD DROP
 sleep 2
 echo ""
 echo "Protect against spoofing packets..."
