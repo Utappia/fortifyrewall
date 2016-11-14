@@ -196,8 +196,6 @@ sleep 2
 # Remove attacking IP after 24 hours
 iptables -A INPUT -m recent --name portscan --remove
 iptables -A FORWARD -m recent --name portscan --remove
-iptables -A INPUT -m recent --name UDP_FLOOD --remove
-iptables -A FORWARD -m recent --name UDP_FLOOD --remove
 
 echo ""
 echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
