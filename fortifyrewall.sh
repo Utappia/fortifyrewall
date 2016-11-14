@@ -68,7 +68,7 @@ IspersistentInstalled(){
 }
 
 # Execute IspersistentInstalled or add # to disable it
-#IspersistentInstalled
+IspersistentInstalled
 
 echo ""
 echo "Deleting all Firewall settings to start clean..."
@@ -121,7 +121,7 @@ KernelFortify(){
 }
 
 # Execute KernelFortify function or add # to disable it
-#KernelFortify
+KernelFortify
 
 sleep 2
 echo ""
@@ -204,16 +204,6 @@ iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j DROP
 sleep 2
 echo ""
-#echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
-#iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-#iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
-#iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-#iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
-#iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-#iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
-#iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-#iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
-
 #Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
 #iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
 #iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
