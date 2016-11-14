@@ -122,7 +122,17 @@ KernelFortify(){
 
 # Execute KernelFortify function or add # to disable it
 KernelFortify
-
+echo ""
+echo "Set default policies to DROP..."
+iptables --policy INPUT DROP
+iptables --policy OUTPUT DROP
+iptables --policy FORWARD DROP
+sleep 2
+echo ""
+echo "Droping all invalid packets..."
+iptables -A INPUT -m state --state INVALID -j DROP
+iptables -A FORWARD -m state --state INVALID -j DROP
+iptables -A OUTPUT -m state --state INVALID -j DROP
 sleep 2
 echo ""
 echo "Allow Traffic on loopback interface..."
@@ -133,11 +143,6 @@ echo ""
 echo "Allow previously initiated connections to bypass rules..."
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
-echo ""
-echo "Set default policies to DROP..."
-iptables --policy INPUT DROP
-iptables --policy OUTPUT DROP
-iptables --policy FORWARD DROP
 sleep 2
 echo ""
 echo "Protect against spoofing packets..."
@@ -195,9 +200,7 @@ sleep 2
 # Remove attacking IP after 24 hours
 iptables -A INPUT -m recent --name portscan --remove
 iptables -A FORWARD -m recent --name portscan --remove
-iptables -A INPUT -m recent --name UDP_FLOOD --remove
-iptables -A FORWARD -m recent --name UDP_FLOOD --remove
-
+sleep 2
 echo ""
 echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
 iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
@@ -213,12 +216,6 @@ echo ""
 echo "Allow ping from inside the server to outside world..."
 iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
-sleep 2
-echo ""
-echo "Droping all invalid packets..."
-iptables -A INPUT -m state --state INVALID -j DROP
-iptables -A FORWARD -m state --state INVALID -j DROP
-iptables -A OUTPUT -m state --state INVALID -j DROP
 sleep 2
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE starts bleow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 # Here you should specify which ports should be open for incomming connections (e.g SSH, FTP, Apache etc)
