@@ -16,7 +16,7 @@ fi
 
 clear
 echo "~~~~~~~~~~ Welcome to 'Fortifyrewall' ~~~~~~~~~~~~~~~~~~"
-echo "                 v16.11-06.1529"
+echo "                 v16.11-14.1846"
 echo ""
 echo "After applying most of the well kown security best practicies,"
 echo "this script will apply the most basic settings that will"
@@ -177,43 +177,33 @@ iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --
 sleep 2
 echo ""
 echo "In case of Nmap scan, defeat port scanning in non standard configurations (XMAS , Banner Scan, etc)..."
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j DROP
-iptables -A INPUT -p tcp --tcp-flags ALL ALL -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
-iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
-iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j DROP
-iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG --log-prefix "Nmap scan blocked : "
-iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL FIN,URG,PSH -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL FIN,URG,PSH -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL ALL -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL ALL -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL NONE -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL NONE -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags SYN,RST SYN,RST -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags SYN,FIN SYN,FIN -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags SYN,FIN SYN,FIN -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags FIN,ACK FIN -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags FIN,ACK FIN -j DROP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG --log-prefix "Nmap scan blocked : "
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck --seconds 86400 --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
 sleep 2
-echo ""
-echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
-iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
-iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j DROP
-sleep 2
-echo ""
-echo "Adding Blocking mechanism for 24 hours when a scan is detected..."
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A INPUT -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j LOG --log-level 4 --log-prefix "Fortifyrewall Blocked scanner : "
-iptables -A FORWARD -m recent --name UDP_FLOOD --rcheck --seconds 86400 -j DROP
-
 # Remove attacking IP after 24 hours
 iptables -A INPUT -m recent --name portscan --remove
 iptables -A FORWARD -m recent --name portscan --remove
 iptables -A INPUT -m recent --name UDP_FLOOD --remove
 iptables -A FORWARD -m recent --name UDP_FLOOD --remove
 
+echo ""
+echo "In case of Nmap scan, mess up its scan timing, and start dropping packets..."
+iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --set
+iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m recent --update --seconds 30 --hitcount 7 -j DROP
+sleep 2
+echo ""
 #Anyone who does not match the above rules (open ports) is trying to access a port our sever does not serve. So, as per design we consider them port scanners and we block them for an entire day
 #iptables -A INPUT -p tcp -m tcp -m recent -m state --state NEW --name portscan --set -j portscan
 #iptables -A INPUT -p udp -m state --state NEW -m recent --set --name domainscans
@@ -257,7 +247,7 @@ echo "Allow incoming connections to user defined ports..."
 ####~~~~~~~~ SETTINGS YOU SHOULD CHANGE ends above ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 sleep 2
 echo ""
-echo "Last but not least, save these awesome new rules..." 
+echo "Last but not least, save these awesome new rules..."
 sleep 2
 dpkg-reconfigure iptables-persistent
 echo ""
