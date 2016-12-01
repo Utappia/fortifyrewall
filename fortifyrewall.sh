@@ -73,6 +73,7 @@ IspersistentInstalled
 echo ""
 echo "Deleting all Firewall settings to start clean..."
 # Flush the nat and mangle tables, flush all chains (-F), and delete all non-default chains (-X)
+iptables -P INPUT ACCEPT
 iptables -F
 iptables -X
 iptables -t nat -F
@@ -80,7 +81,6 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 # Start clean by setting the default policies for each of the built-in chains to ACCEPT.
-iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 
