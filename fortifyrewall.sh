@@ -217,7 +217,7 @@ echo "Allow ping from inside the server to outside world..."
 iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 sleep 2
-####~~~~~~~~ SETTINGS YOU SHOULD CHANGE starts bleow ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+####~~~~~~~~ SETTINGS YOU SHOULD CHANGE starts below ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
 # Here you should specify which ports should be open for incomming connections (e.g SSH, FTP, Apache etc)
 echo ""
 echo "Allow incoming connections to user defined ports..."
